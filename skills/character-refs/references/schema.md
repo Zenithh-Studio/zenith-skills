@@ -11,3 +11,5 @@ Result JSON: `{ "jobId": "the prepared job id", "model": "actual generator ident
 Custom config: `{ "executable": "/absolute/path/to/generator", "args": ["--request", "{request}", "--result", "{result}"], "timeoutMs": 120000 }`. The executable receives job and result-file paths as distinct arguments, without a shell. It must write the result file and actual PNG. The config belongs outside version control; credentials remain inherited environment variables. Failed, timed-out, or output-less runs do not append versions. Use prepare/import to preserve a pending job when no adapter is configured.
 
 `--cast` reconciles design fields. CLI validation checks all recorded image file hashes. Library callers supply `artifactPath` for that check. Validation fails for a missing/unapproved anchor or stale views; an approved anchor alone is a valid tier-one delivery. Further views are on demand.
+
+Managed image paths include a stable asset-ID hash directory under images/, so multiple character asset files may safely share one project directory.

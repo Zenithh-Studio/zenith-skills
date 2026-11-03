@@ -8,14 +8,24 @@ const skills = join(root, 'skills');
 let failures = 0;
 for (const name of existsSync(skills) ? readdirSync(skills).sort() : []) {
   const test = join(skills, name, 'scripts/selftest.mjs');
-  if (!existsSync(test)) { console.error(`Missing self-test: ${name}`); failures++; continue; }
-  const result = spawnSync(process.execPath, [test], { stdio: 'inherit' });
-  if (result.error || result.status !== 0) { console.error(result.error?.message ?? `Failed: ${name}`); failures++; }
+  if (!existsSync(test)) {
+    console.error(`Missing self-test: ${name}`);
+    failures++;
+    continue;
+  }
+  const result = spawnSync(process.execPath, [test], {
+    stdio: 'inherit'
+  });
+  if (result.error || result.status !== 0) {
+    console.error(result.error?.message ?? `Failed: ${name}`);
+    failures++;
+  }
 }
 const integration = join(root, 'scripts/integration.mjs');
 if (existsSync(integration)) {
-  const result = spawnSync(process.execPath, [integration], { stdio: 'inherit' });
+  const result = spawnSync(process.execPath, [integration], {
+    stdio: 'inherit'
+  });
   if (result.error || result.status !== 0) failures++;
 }
-if (failures) process.exitCode = 1;
-else console.log('All available skill tests passed.');
+if (failures) process.exitCode = 1;else console.log('All available skill tests passed.');

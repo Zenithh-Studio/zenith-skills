@@ -8,6 +8,8 @@ Dependencies: outline → characters/art → script → staging → storyboard. 
 
 States: missing (unregistered), blocked (upstream not ready), invalid (failed validation), stale (upstream fingerprint differs), pending-approval (valid unapproved outline), ready. `register` snapshots current inputs and invokes the local stage CLI. `status` recomputes without writing; `refresh` saves status. `accept` requires valid current data and ready upstreams before updating input snapshots. All authored changes are performed by the Agent, not these status commands.
 
-`approve --stage outline` records the current artifact-byte hash. `approve --stage character-refs --character C01` invokes that asset's confirm command and records its fingerprint; it requires a current cast design and actual user approval. Image versions maintain their own anchor approval fingerprint. Approvals do not grant permission for unrelated external actions.
+`approve --stage outline` records a fingerprint of current artifact bytes and its source-input snapshot. `approve --stage character-refs --character C01` invokes that asset's confirm command and records its fingerprint; it requires a current cast design and actual user approval. Image versions maintain their own anchor approval fingerprint. Approvals do not grant permission for unrelated external actions.
 
 The orchestrator passes available outline/cast/art/script/staging/source paths to each stage validator using executable argument arrays. Missing stage installations are reported rather than dynamically fetched. Paths are resolved relative to pipeline.json; `--skills-dir` overrides the saved installation directory after relocation.
+
+Pipeline readiness also checks outline count/durations/adaptation against the accepted brief, screenplay/storyboard aggregate episode completeness, storyboard aspect ratio, and declared-source availability. Artifact fingerprints use exact file bytes, including formatting.

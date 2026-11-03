@@ -14,14 +14,66 @@ Outline → characters and art → screenplay → opening staging → storyboard
 
 Start with `skills/drama-pipeline/SKILL.md` for a complete project, or select one stage for an existing artifact. Outline direction and character anchor images require human approval. Other stages proceed after validation, unless a consequential decision is missing.
 
+## Choose a skill
+
+| Skill | Working artifact | Main deliverable |
+| --- | --- | --- |
+| [novel-outline](skills/novel-outline/SKILL.md) | outline.json | Adaptation decisions and episode outline |
+| [novel-characters](skills/novel-characters/SKILL.md) | cast.json | Character and voice bible |
+| [novel-art](skills/novel-art/SKILL.md) | art.json | Locations, props, and state prompts |
+| [novel-script](skills/novel-script/SKILL.md) | script.json | Screenplay and dialogue line book |
+| [novel-staging](skills/novel-staging/SKILL.md) | staging.json | Editable opening scene plans |
+| [novel-storyboard](skills/novel-storyboard/SKILL.md) | storyboard.json | Cuts, timeline, and production pack |
+| [character-refs](skills/character-refs/SKILL.md) | Per-character asset.json | Actual reference images and gallery |
+| [drama-pipeline](skills/drama-pipeline/SKILL.md) | pipeline.json | Status, approvals, and next actions |
+
+## Start a project
+
+From the repository root, initialize with a brief shaped like the bundled example, then ask your Agent to use `drama-pipeline`:
+
+```sh
+node skills/drama-pipeline/scripts/drama-pipeline.mjs init skills/drama-pipeline/examples/brief.json --skills-dir ./skills --source skills/novel-outline/examples/source.txt --out work/last-signal/pipeline.json
+node skills/drama-pipeline/scripts/drama-pipeline.mjs resume work/last-signal/pipeline.json
+```
+
+The Agent authors each artifact, runs its validator, then registers it:
+
+```sh
+node skills/drama-pipeline/scripts/drama-pipeline.mjs register work/last-signal/pipeline.json --stage outline --artifact work/last-signal/outline.json
+```
+
+After the user has reviewed and approved that exact outline:
+
+```sh
+node skills/drama-pipeline/scripts/drama-pipeline.mjs approve work/last-signal/pipeline.json --stage outline
+```
+
+`resume` gives available next work. `status` is read-only; `refresh` persists current findings. After reconciling stale authored data, `accept --stage STAGE` records its new upstream snapshot. Registration and acceptance do not author missing content. Fingerprints use exact file bytes: even a formatting-only edit can require reconciliation.
+
+## Explore the offline example
+
+```sh
+node scripts/demo.mjs --out /tmp/zskills-demo
+```
+
+Open the generated `index.html` to navigate all seven production reports and the neutral pack. This copies original fixtures and produces no model calls or images. The character gallery is visibly pending. The demo pipeline preserves the outline approval checkpoint rather than inventing user consent. Choose a new output directory for each run.
+
+Reports open offline and export JSON. Use **Review JSON** to access current edited data when a browser limits downloads or clipboard access. Staging edits are saved in that browser; export and validate them before replacing working data.
+
 ## Verify
 
 ```sh
 node scripts/selftest.mjs
 ```
 
-Every test is offline. Image adapter tests use a local fake executable; they do not demonstrate live image quality.
+The suite covers per-skill validation, a complete two-character image-adapter workflow, independent directory copies, cross-stage handoffs, revision/approval invalidation, report script compilation, and documented commands. Every test is offline. Image adapter tests use a local fake executable; they do not demonstrate live image quality.
 
 ## Boundaries
 
 This suite prepares production material and character references. Video generation, editing, TTS execution, and vendor-specific video protocols are outside v1. No generated report or image is committed by default.
+
+## Development
+
+Each skill carries a small local runtime so copying it does not break imports. Runtime copies intentionally share a version-one contract; the integration test checks their equality. Change them together when modifying the common CLI/report contract. Stage-specific rules remain in their own modules. No formatter or test dependency is required by consumers.
+
+Every schema is version 1. Unsupported versions fail explicitly; importing external artifacts requires deliberate conversion to the documented contracts. Generated work belongs outside tracked skill resources. Examples under each skill are standalone fixtures, including their local upstream snapshots.
