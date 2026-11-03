@@ -77,3 +77,10 @@ This suite prepares production material and character references. Video generati
 Each skill carries a small local runtime so copying it does not break imports. Runtime copies intentionally share a version-one contract; the integration test checks their equality. Change them together when modifying the common CLI/report contract. Stage-specific rules remain in their own modules. No formatter or test dependency is required by consumers.
 
 Every schema is version 1. Unsupported versions fail explicitly; importing external artifacts requires deliberate conversion to the documented contracts. Generated work belongs outside tracked skill resources. Examples under each skill are standalone fixtures, including their local upstream snapshots.
+
+## Community and project policies
+
+- [Contributing](CONTRIBUTING.md): local development, validation, and pull requests.
+- [Security](SECURITY.md): supported code and private vulnerability reporting.
+- [Code of Conduct](CODE_OF_CONDUCT.md): participation expectations and reporting concerns.
+- [MIT License](LICENSE): terms for using and distributing this project.
