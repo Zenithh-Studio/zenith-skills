@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "kind": "outline",
+  "id": "last-signal",
+  "title": "The Last Signal",
+  "adaptation": {
+    "mode": "core",
+    "premise": "A signal keeper must uncover sabotage before a train arrives.",
+    "decisions": [
+      {
+        "decision": "Focus the adaptation on the locked cabinet.",
+        "evidence": [
+          "Mara held the brass key beside the locked signal cabinet."
+        ]
+      }
+    ]
+  },
+  "characters": [
+    {
+      "id": "C01",
+      "name": "Mara",
+      "tier": "lead",
+      "arc": "From obedience to decisive intervention."
+    },
+    {
+      "id": "C02",
+      "name": "Ivo",
+      "tier": "support",
+      "arc": "From distant observer to urgent ally."
+    }
+  ],
+  "locations": [
+    {
+      "id": "L01",
+      "name": "Signal room",
+      "primary": true
+    }
+  ],
+  "props": [
+    {
+      "id": "P01",
+      "name": "Brass key",
+      "purpose": "Opens the cabinet and reveals the sabotage."
+    }
+  ],
+  "beats": [
+    {
+      "id": "B01",
+      "description": "The warning circuit is exposed.",
+      "weight": "major"
+    }
+  ],
+  "episodes": [
+    {
+      "id": "E01",
+      "number": 1,
+      "targetSeconds": 12,
+      "hook": "An approaching train faces a dark signal.",
+      "cliff": "Who disconnected the lamp?",
+      "synopsis": "Mara and Ivo open the signal cabinet and find deliberate interference.",
+      "characterIds": [
+        "C01",
+        "C02"
+      ],
+      "locationIds": [
+        "L01"
+      ],
+      "propIds": [
+        "P01"
+      ],
+      "beatIds": [
+        "B01"
+      ]
+    }
+  ]
+}
