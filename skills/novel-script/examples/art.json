@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "kind": "art",
+  "id": "last-signal-art",
+  "title": "The Last Signal \u2014 Art",
+  "locations": [
+    {
+      "id": "L01",
+      "name": "Signal room",
+      "anchors": [
+        "Tall west-facing window",
+        "Green metal signal cabinet",
+        "Scarred oak desk"
+      ],
+      "variants": [
+        {
+          "id": "night",
+          "description": "Rainy night with a single overhead lamp.",
+          "prompt": "Empty railway signal room at night, tall west-facing window, green metal signal cabinet, scarred oak desk, overhead tungsten lamp, no people."
+        }
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "P01",
+      "name": "Brass key",
+      "purpose": "Unlocks the signal cabinet.",
+      "scale": "palm-sized",
+      "anchors": [
+        "Oval bow",
+        "Three square teeth",
+        "Dark notch beside the bow"
+      ],
+      "states": [
+        {
+          "id": "intact",
+          "prompt": "A palm-sized brass key with an oval bow, three square teeth and a dark notch beside the bow, isolated on a plain white background, no hands or people."
+        }
+      ]
+    }
+  ]
+}
