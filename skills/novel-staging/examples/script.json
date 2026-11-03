@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "kind": "script",
+  "id": "last-signal-script",
+  "title": "The Last Signal \u2014 Screenplay",
+  "params": {
+    "wordsPerMinute": 150,
+    "actionSeconds": 2,
+    "tolerance": 0.15
+  },
+  "episodes": [
+    {
+      "id": "E01",
+      "number": 1,
+      "targetSeconds": 12,
+      "hook": "The dark signal threatens an approaching train.",
+      "cliff": "The disconnected wire exposes sabotage.",
+      "hookBeatId": "BT01",
+      "outlineBeatIds": [
+        "B01"
+      ],
+      "scenes": [
+        {
+          "id": "SC01",
+          "locationId": "L01",
+          "variantId": "night",
+          "characterIds": [
+            "C01",
+            "C02"
+          ],
+          "propIds": [
+            "P01"
+          ],
+          "beats": [
+            {
+              "id": "BT01",
+              "type": "action",
+              "action": "Mara raises the brass key beside the unlit signal cabinet.",
+              "seconds": 2
+            },
+            {
+              "id": "BT02",
+              "type": "dialogue",
+              "speakerId": "C02",
+              "line": "The last train is coming. Turn the signal back now.",
+              "delivery": "Urgent and low."
+            },
+            {
+              "id": "BT03",
+              "type": "action",
+              "action": "Mara opens the cabinet and exposes a disconnected wire.",
+              "seconds": 2
+            },
+            {
+              "id": "BT04",
+              "type": "dialogue",
+              "speakerId": "C01",
+              "line": "Someone cut the wire. We must warn the train now.",
+              "delivery": "A deliberate challenge to the unseen saboteur."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

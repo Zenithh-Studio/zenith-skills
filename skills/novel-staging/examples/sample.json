@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "kind": "staging",
+  "id": "last-signal-staging",
+  "title": "The Last Signal \u2014 Opening Staging",
+  "locations": [
+    {
+      "id": "L01",
+      "name": "Signal room",
+      "basis": "design",
+      "items": [
+        {
+          "id": "cabinet",
+          "name": "Signal cabinet",
+          "box": [
+            0.65,
+            0.1,
+            0.95,
+            0.35
+          ]
+        },
+        {
+          "id": "desk",
+          "name": "Oak desk",
+          "box": [
+            0.1,
+            0.5,
+            0.4,
+            0.8
+          ]
+        }
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "SC01",
+      "episodeId": "E01",
+      "locationId": "L01",
+      "places": [
+        {
+          "id": "C01",
+          "name": "Mara",
+          "present": true,
+          "itemId": "cabinet",
+          "x": 0.72,
+          "y": 0.46,
+          "posture": "stand",
+          "facing": "north"
+        },
+        {
+          "id": "C02",
+          "name": "Ivo",
+          "present": true,
+          "itemId": "desk",
+          "x": 0.4,
+          "y": 0.4,
+          "posture": "stand",
+          "facing": "east"
+        }
+      ],
+      "extras": 0,
+      "extrasWhere": ""
+    }
+  ]
+}
