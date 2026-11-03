@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+*.log
+/work/
+/reports/
+/production/
+**/config.local.json
+.env
+.env.*
