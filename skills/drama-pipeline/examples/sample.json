@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "kind": "pipeline",
+  "id": "last-signal",
+  "title": "The Last Signal",
+  "skillsDirectory": "/path/to/skills",
+  "brief": {
+    "genre": "Railway suspense",
+    "episodeCount": 1,
+    "targetSeconds": 12,
+    "adaptationMode": "core",
+    "aspectRatio": "16:9",
+    "style": "Naturalistic night interiors"
+  },
+  "source": null,
+  "stages": {},
+  "approvals": {
+    "outline": null,
+    "anchors": {}
+  }
+}
