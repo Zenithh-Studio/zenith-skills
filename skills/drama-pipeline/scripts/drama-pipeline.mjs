@@ -3,13 +3,13 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve, dirname, join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 export const modules = {
-  outline: 'novel-outline',
-  characters: 'novel-characters',
-  art: 'novel-art',
-  script: 'novel-script',
-  staging: 'novel-staging',
+  outline: 'drama-outline',
+  characters: 'drama-characters',
+  art: 'drama-art',
+  script: 'drama-script',
+  staging: 'drama-staging',
   'character-refs': 'character-refs',
-  storyboard: 'novel-storyboard'
+  storyboard: 'drama-storyboard'
 };
 export const dependencies = {
   outline: [],

@@ -5,7 +5,7 @@ import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { init, register } from '../skills/drama-pipeline/scripts/drama-pipeline.mjs';
-import { exportPack } from '../skills/novel-storyboard/scripts/novel-storyboard.mjs';
+import { exportPack } from '../skills/drama-storyboard/scripts/drama-storyboard.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const arg = process.argv.slice(2);
 if (arg.length !== 2 || arg[0] !== '--out') throw new Error('Usage: node scripts/demo.mjs --out NEW_DIRECTORY');
@@ -16,16 +16,16 @@ mkdirSync(out, {
 });
 const read = p => JSON.parse(readFileSync(p, 'utf8'));
 const stages = {
-  outline: 'novel-outline',
-  characters: 'novel-characters',
-  art: 'novel-art',
-  script: 'novel-script',
-  staging: 'novel-staging',
-  storyboard: 'novel-storyboard',
+  outline: 'drama-outline',
+  characters: 'drama-characters',
+  art: 'drama-art',
+  script: 'drama-script',
+  staging: 'drama-staging',
+  storyboard: 'drama-storyboard',
   'character-refs': 'character-refs'
 };
 for (const [stage, name] of Object.entries(stages)) copyFileSync(join(root, 'skills', name, 'examples/sample.json'), join(out, stage + '.json'));
-copyFileSync(join(root, 'skills/novel-outline/examples/source.txt'), join(out, 'source.txt'));
+copyFileSync(join(root, 'skills/drama-outline/examples/source.txt'), join(out, 'source.txt'));
 let project = init(read(join(root, 'skills/drama-pipeline/examples/brief.json')), join(root, 'skills'), 'source.txt');
 for (const [stage, name] of Object.entries(stages)) {
   const artifact = join(out, stage + '.json');

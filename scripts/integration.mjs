@@ -8,8 +8,8 @@ import { spawnSync } from 'node:child_process';
 import { Script } from 'node:vm';
 import { init, register, refresh, approve, accept } from '../skills/drama-pipeline/scripts/drama-pipeline.mjs';
 import { seed as seedRefs, generate } from '../skills/character-refs/scripts/character-refs.mjs';
-import { seed as seedBoard, validate as validateBoard, exportPack } from '../skills/novel-storyboard/scripts/novel-storyboard.mjs';
-import { blocking } from '../skills/novel-staging/scripts/novel-staging.mjs';
+import { seed as seedBoard, validate as validateBoard, exportPack } from '../skills/drama-storyboard/scripts/drama-storyboard.mjs';
+import { blocking } from '../skills/drama-staging/scripts/drama-staging.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..'),
   skills = join(root, 'skills');
 const tmp = mkdtempSync(join(tmpdir(), 'zskills-integration-'));
@@ -26,15 +26,15 @@ function run(cli, args, cwd = root) {
 }
 try {
   const names = {
-    outline: 'novel-outline',
-    characters: 'novel-characters',
-    art: 'novel-art',
-    script: 'novel-script',
-    staging: 'novel-staging',
-    storyboard: 'novel-storyboard'
+    outline: 'drama-outline',
+    characters: 'drama-characters',
+    art: 'drama-art',
+    script: 'drama-script',
+    staging: 'drama-staging',
+    storyboard: 'drama-storyboard'
   };
   for (const [stage, name] of Object.entries(names)) cpSync(join(skills, name, 'examples/sample.json'), join(tmp, stage + '.json'));
-  cpSync(join(skills, 'novel-outline/examples/source.txt'), join(tmp, 'source.txt'));
+  cpSync(join(skills, 'drama-outline/examples/source.txt'), join(tmp, 'source.txt'));
   const pipelinePath = join(tmp, 'pipeline.json');
   let project = init({
     id: 'last-signal',
@@ -129,7 +129,7 @@ try {
   project = approve(project, pipelinePath, 'outline');
   assert.equal(project.stages.outline.status, 'ready');
   // Runtime copies intentionally share one CLI/report contract.
-  const runtime = readFileSync(join(skills, 'novel-outline/scripts/lib.mjs'), 'utf8');
+  const runtime = readFileSync(join(skills, 'drama-outline/scripts/lib.mjs'), 'utf8');
   for (const name of readdirSync(skills)) assert.equal(readFileSync(join(skills, name, 'scripts/lib.mjs'), 'utf8'), runtime, name + ' runtime drift');
   const demo = run(join(root, 'scripts/demo.mjs'), ['--out', join(tmp, 'demo')]);
   assert.equal(demo.status, 0, demo.stderr);
@@ -163,7 +163,7 @@ try {
     render,
     embed,
     imageLink
-  } = await import('../skills/novel-outline/scripts/lib.mjs');
+  } = await import('../skills/drama-outline/scripts/lib.mjs');
   const hostile = {
     schemaVersion: 1,
     kind: 'outline',

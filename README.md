@@ -6,7 +6,7 @@ Requires Node.js 22 or newer. No npm installation, API key, runtime-specific ins
 
 ## Install manually
 
-Copy a directory from `skills/` into your Agent's skill directory, or ask the Agent to read its `SKILL.md` directly. Each production skill includes its own runtime and fixtures. For orchestration, supply the directory containing the stage skills with `--skills-dir`.
+Copy a directory from `skills/` into your Agent's skill directory, or ask the Agent to read its `SKILL.md` directly. Each production skill includes its own runtime and fixtures. For orchestration, supply the directory containing the stage skills with `--skills-dir`. When upgrading a manual installation, replace outdated skill copies with the current directory names to avoid duplicate discovery. Working artifact kinds and pipeline stage keys are unchanged.
 
 ## Workflow
 
@@ -18,12 +18,12 @@ Start with `skills/drama-pipeline/SKILL.md` for a complete project, or select on
 
 | Skill | Working artifact | Main deliverable |
 | --- | --- | --- |
-| [novel-outline](skills/novel-outline/SKILL.md) | outline.json | Adaptation decisions and episode outline |
-| [novel-characters](skills/novel-characters/SKILL.md) | cast.json | Character and voice bible |
-| [novel-art](skills/novel-art/SKILL.md) | art.json | Locations, props, and state prompts |
-| [novel-script](skills/novel-script/SKILL.md) | script.json | Screenplay and dialogue line book |
-| [novel-staging](skills/novel-staging/SKILL.md) | staging.json | Editable opening scene plans |
-| [novel-storyboard](skills/novel-storyboard/SKILL.md) | storyboard.json | Cuts, timeline, and production pack |
+| [drama-outline](skills/drama-outline/SKILL.md) | outline.json | Adaptation decisions and episode outline |
+| [drama-characters](skills/drama-characters/SKILL.md) | cast.json | Character and voice bible |
+| [drama-art](skills/drama-art/SKILL.md) | art.json | Locations, props, and state prompts |
+| [drama-script](skills/drama-script/SKILL.md) | script.json | Screenplay and dialogue line book |
+| [drama-staging](skills/drama-staging/SKILL.md) | staging.json | Editable opening scene plans |
+| [drama-storyboard](skills/drama-storyboard/SKILL.md) | storyboard.json | Cuts, timeline, and production pack |
 | [character-refs](skills/character-refs/SKILL.md) | Per-character asset.json | Actual reference images and gallery |
 | [drama-pipeline](skills/drama-pipeline/SKILL.md) | pipeline.json | Status, approvals, and next actions |
 
@@ -32,7 +32,7 @@ Start with `skills/drama-pipeline/SKILL.md` for a complete project, or select on
 From the repository root, initialize with a brief shaped like the bundled example, then ask your Agent to use `drama-pipeline`:
 
 ```sh
-node skills/drama-pipeline/scripts/drama-pipeline.mjs init skills/drama-pipeline/examples/brief.json --skills-dir ./skills --source skills/novel-outline/examples/source.txt --out work/last-signal/pipeline.json
+node skills/drama-pipeline/scripts/drama-pipeline.mjs init skills/drama-pipeline/examples/brief.json --skills-dir ./skills --source skills/drama-outline/examples/source.txt --out work/last-signal/pipeline.json
 node skills/drama-pipeline/scripts/drama-pipeline.mjs resume work/last-signal/pipeline.json
 ```
 

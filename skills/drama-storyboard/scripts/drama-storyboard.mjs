@@ -1,0 +1,275 @@
+import { guardedValidation, inspection, list, reference, finite, beatSeconds, main, isMain, read, save, hash, render, imageLink, escape } from './lib.mjs';
+import { existsSync, mkdirSync, mkdtempSync, copyFileSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, resolve, join, basename, extname } from 'node:path';
+export function opening(scene) {
+  return list(scene.places).filter(p => p.present).map(p => `${p.id} ${p.posture === 'sit' ? 'sits' : 'stands'} at (${p.x.toFixed(2)}, ${p.y.toFixed(2)}) beside ${p.itemId}, facing ${p.facing}`).join('; ') + `. ${scene.extras > 0 ? `${scene.extras} extras ${scene.extrasWhere}` : 'No extras'}.`;
+}
+export function seed(script, staging) {
+  return {
+    schemaVersion: 1,
+    kind: 'storyboard',
+    id: script.id + '-board',
+    title: script.title + ' — Storyboard',
+    aspectRatio: '16:9',
+    episodes: list(script.episodes).map(e => ({
+      id: e.id,
+      segments: list(e.scenes).map((s, i) => ({
+        id: e.id + '-' + String(i + 1).padStart(2, '0'),
+        sceneId: s.id,
+        openingBlocking: staging ? opening(list(staging.scenes).find(v => v.id === s.id) ?? {
+          places: [],
+          extras: 0
+        }) : '',
+        soundscape: '',
+        cuts: []
+      }))
+    }))
+  };
+}
+function validateDocument(doc, ctx = {}) {
+  const g = inspection(doc, 'storyboard');
+  if (!doc || typeof doc !== 'object') return g.result();
+  g.check(!!ctx.script, 'required-script', '$', 'Supply --script for beat coverage and dialogue timing.');
+  g.check(['16:9', '9:16'].includes(doc.aspectRatio), 'aspect-ratio', '$.aspectRatio', 'Choose 16:9 or 9:16.');
+  const params = {
+    maxSegmentSeconds: 15,
+    minCutSeconds: 2,
+    maxCutSeconds: 5,
+    tolerance: .15,
+    ...doc.params
+  };
+  g.check([params.maxSegmentSeconds, params.minCutSeconds, params.maxCutSeconds].every(v => finite(v) && v > 0) && params.minCutSeconds <= params.maxCutSeconds, 'timing-parameter', '$.params', 'Use positive ordered cut and segment limits.');
+  g.check(finite(params.tolerance) && params.tolerance >= 0 && params.tolerance <= 1, 'timing-parameter', '$.params.tolerance', 'Use tolerance between zero and one.');
+  g.array(doc.episodes, '$.episodes');
+  g.unique(doc.episodes, '$.episodes');
+  const segments = list(doc.episodes).flatMap(e => list(e.segments));
+  g.unique(segments, '$.episodes[].segments');
+  g.unique(segments.flatMap(s => list(s.cuts)), '$.episodes[].segments[].cuts');
+  for (const [ei, e] of list(doc.episodes).entries()) {
+    const p = `$.episodes[${ei}]`;
+    g.array(e.segments, p + '.segments');
+    const script = list(ctx.script?.episodes).find(v => v.id === e.id);
+    if (ctx.script) reference(g, e.id, ctx.script.episodes, p + '.id');
+    const claimed = [];
+    const expected = list(script?.scenes).flatMap(s => list(s.beats).map(b => b.id));
+    const seenScenes = new Set();
+    let total = 0;
+    for (const [si, s] of list(e.segments).entries()) {
+      const q = p + `.segments[${si}]`;
+      g.string(s.sceneId, q + '.sceneId');
+      g.string(s.openingBlocking, q + '.openingBlocking');
+      g.string(s.soundscape, q + '.soundscape');
+      g.array(s.cuts, q + '.cuts');
+      const scene = list(script?.scenes).find(v => v.id === s.sceneId);
+      if (script) reference(g, s.sceneId, script.scenes, q + '.sceneId');
+      if (!seenScenes.has(s.sceneId) && ctx.staging) {
+        const stage = list(ctx.staging.scenes).find(v => v.id === s.sceneId && v.episodeId === e.id);
+        g.check(!!stage, 'staging-scene', q + '.sceneId', 'Supply the matching staging scene.');
+        if (stage) g.check(s.openingBlocking === opening(stage), 'staging-handoff', q + '.openingBlocking', 'Opening blocking must match the canonical staging sentence verbatim.');
+      }
+      seenScenes.add(s.sceneId);
+      let duration = 0;
+      for (const [ci, c] of list(s.cuts).entries()) {
+        const r = q + `.cuts[${ci}]`;
+        g.array(c.beatIds, r + '.beatIds');
+        g.array(c.characterIds, r + '.characterIds', 0);
+        g.array(c.references, r + '.references', 0);
+        g.check(finite(c.seconds) && c.seconds >= params.minCutSeconds && c.seconds <= params.maxCutSeconds, 'cut-duration', r + '.seconds', `Use ${params.minCutSeconds}–${params.maxCutSeconds} seconds per cut.`);
+        duration += c.seconds;
+        g.check(['extreme-wide', 'wide', 'medium', 'close', 'extreme-close'].includes(c.size), 'shot-size', r + '.size', 'Use a supported shot size.');
+        for (const k of ['camera', 'framePrompt', 'action']) g.string(c[k], r + '.' + k);
+        for (const ref of list(c.references)) {
+          g.string(ref.id, r + '.references.id');
+          g.string(ref.file, r + '.references.file');
+        }
+        if (scene) {
+          for (const id of list(c.characterIds)) g.check(list(scene.characterIds).includes(id), 'shot-character', r + '.characterIds', `Character ${id} is not in the screenplay scene.`);
+          for (const id of list(c.beatIds)) reference(g, id, scene.beats, r + '.beatIds');
+          const seconds = list(c.beatIds).reduce((sum, id) => sum + beatSeconds(list(scene.beats).find(b => b.id === id) ?? {}, ctx.script.params), 0);
+          g.check(seconds <= c.seconds + 1e-6, 'beat-fit', r, `Claimed beats need ${seconds.toFixed(2)}s; cut has ${c.seconds}s.`);
+        }
+        claimed.push(...list(c.beatIds));
+      }
+      g.check(finite(duration) && duration > 0 && duration <= params.maxSegmentSeconds, 'segment-duration', q, `Segment must fit ${params.maxSegmentSeconds}s.`);
+      total += duration;
+    }
+    if (script) {
+      g.check(JSON.stringify(claimed) === JSON.stringify(expected), 'beat-coverage', p + '.segments', 'Cover every screenplay beat exactly once, in order, within its scene.');
+      g.check(Math.abs(total - script.targetSeconds) <= script.targetSeconds * params.tolerance, 'episode-timing', p, `Storyboard ${total}s differs from target ${script.targetSeconds}s.`);
+    }
+  }
+  if (!ctx.staging) g.skip('staging-handoff', 'Supply --staging to verify canonical scene openings.');
+  return g.result();
+}
+export function production(doc, script) {
+  const shots = [],
+    timeline = [],
+    dialogue = [],
+    prompts = [];
+  for (const e of doc.episodes) {
+    let offset = 0;
+    for (const segment of e.segments) {
+      const scene = list(script.episodes).find(v => v.id === e.id)?.scenes.find(s => s.id === segment.sceneId);
+      let local = 0;
+      const lines = [`# ${segment.id}`, `Opening: ${segment.openingBlocking}`, `Soundscape: ${segment.soundscape}`];
+      for (const cut of segment.cuts) {
+        let beatOffset = 0;
+        const beatLines = cut.beatIds.flatMap(id => {
+          const beat = scene.beats.find(b => b.id === id);
+          const duration = beatSeconds(beat, script.params);
+          const startSeconds = offset + local + beatOffset;
+          beatOffset += duration;
+          return beat.type === 'dialogue' ? [{
+            episodeId: e.id,
+            segmentId: segment.id,
+            cutId: cut.id,
+            beatId: beat.id,
+            speakerId: beat.speakerId,
+            line: beat.line,
+            delivery: beat.delivery ?? '',
+            startSeconds,
+            durationSeconds: duration
+          }] : [];
+        });
+        dialogue.push(...beatLines);
+        shots.push({
+          episodeId: e.id,
+          segmentId: segment.id,
+          sceneId: segment.sceneId,
+          ...cut
+        });
+        timeline.push({
+          episodeId: e.id,
+          segmentId: segment.id,
+          cutId: cut.id,
+          startSeconds: offset + local,
+          endSeconds: offset + local + cut.seconds,
+          keyframeSeconds: local
+        });
+        lines.push(`\n${cut.id} · ${local.toFixed(2)}–${(local + cut.seconds).toFixed(2)}s · ${cut.size} · ${cut.camera}`, cut.action, `Keyframe: ${cut.framePrompt}`, ...beatLines.map(b => `${b.speakerId}: ${b.line}`));
+        local += cut.seconds;
+      }
+      prompts.push({
+        id: segment.id,
+        text: lines.join('\n') + '\n'
+      });
+      offset += local;
+    }
+  }
+  return {
+    shots,
+    timeline,
+    dialogue,
+    prompts
+  };
+}
+export function exportPack(doc, ctx, input, out) {
+  const result = validate(doc, ctx);
+  if (!result.ok) throw new Error('Fix validation before export: ' + JSON.stringify(result.issues));
+  if (!out) throw new Error('Provide --out for a new production directory.');
+  const destination = resolve(out);
+  if (existsSync(destination)) throw new Error('Export destination already exists; choose a new directory.');
+  mkdirSync(dirname(destination), {
+    recursive: true
+  });
+  const temp = mkdtempSync(join(dirname(destination), '.zskills-export-'));
+  try {
+    const data = production(doc, ctx.script),
+      manifest = {
+        schemaVersion: 1,
+        kind: 'production-pack',
+        id: doc.id,
+        title: doc.title,
+        aspectRatio: doc.aspectRatio,
+        files: [],
+        missingAssets: []
+      };
+    for (const key of ['shots', 'timeline', 'dialogue']) save(join(temp, key + '.json'), data[key]);
+    mkdirSync(join(temp, 'prompts'));
+    for (const p of data.prompts) {
+      if (!/^[A-Za-z0-9_-]+$/.test(p.id)) throw new Error('Segment IDs must be safe filenames for export.');
+      writeFileSync(join(temp, 'prompts', p.id + '.md'), p.text);
+    }
+    mkdirSync(join(temp, 'assets'));
+    let index = 0;
+    for (const shot of data.shots) {
+      const refs = [...(shot.keyframe ? [{
+        id: shot.id + '-keyframe',
+        file: shot.keyframe
+      }] : []), ...list(shot.references)];
+      if (!shot.keyframe) manifest.missingAssets.push({
+        cutId: shot.id,
+        id: shot.id + '-keyframe',
+        reason: 'No keyframe supplied.'
+      });
+      for (const ref of refs) {
+        const path = resolve(dirname(input), ref.file);
+        if (!existsSync(path)) {
+          manifest.missingAssets.push({
+            cutId: shot.id,
+            id: ref.id,
+            file: ref.file,
+            reason: 'File not found.'
+          });
+          continue;
+        }
+        const bytes = readFileSync(path),
+          file = 'assets/' + String(++index).padStart(4, '0') + extname(path).replace(/[^.A-Za-z0-9]/g, '');
+        copyFileSync(path, join(temp, file));
+        manifest.files.push({
+          cutId: shot.id,
+          id: ref.id,
+          file,
+          sha256: hash(bytes)
+        });
+      }
+    }
+    save(join(temp, 'storyboard.json'), doc);
+    save(join(temp, 'manifest.json'), manifest);
+    renameSync(temp, destination);
+    return {
+      directory: destination,
+      missingAssets: manifest.missingAssets.length
+    };
+  } catch (e) {
+    rmSync(temp, {
+      recursive: true,
+      force: true
+    });
+    throw e;
+  }
+}
+export function renderBoard(doc, result, {
+  file,
+  opts
+}) {
+  const images = list(doc.episodes).flatMap(e => list(e.segments)).flatMap(s => list(s.cuts)).filter(c => c.keyframe).map(c => ({
+    src: imageLink(c.keyframe, file, opts.out),
+    label: c.id
+  }));
+  const extra = '<section><h2>Cut rhythm</h2>' + list(doc.episodes).map(e => `<h3>${escape(e.id)}</h3><div style="display:flex;gap:3px;overflow:auto">${list(e.segments).flatMap(s => list(s.cuts)).map(c => `<div style="flex:${finite(c.seconds) ? c.seconds : 1};min-width:48px;padding:1rem .3rem;background:#d5e4ed;border-bottom:4px solid #d8a448">${escape(c.id)}<br>${escape(c.seconds)}s</div>`).join('')}</div>`).join('') + '</section>';
+  return render(doc, result, {
+    extra,
+    images
+  });
+}
+export function validate(doc, ctx = {}) {
+  return guardedValidation(validateDocument, doc, ctx);
+}
+if (isMain(import.meta.url)) main({
+  validate,
+  render: renderBoard,
+  help: 'drama-storyboard: seed <script.json> [--staging staging.json] [--out storyboard.json]\nvalidate|checkup|render <storyboard.json> --script script.json [--staging staging.json] [--out path] [--md]\nexport <storyboard.json> --script script.json [--staging staging.json] --out NEW_DIRECTORY',
+  commands: {
+    seed: ({
+      file,
+      ctx,
+      emit
+    }) => emit(seed(read(file), ctx.staging)),
+    export: ({
+      file,
+      ctx,
+      opts
+    }) => console.log(JSON.stringify(exportPack(read(file), ctx, resolve(file), opts.out)))
+  }
+});
