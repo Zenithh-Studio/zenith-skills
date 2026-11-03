@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "kind": "storyboard",
+  "id": "last-signal-board",
+  "title": "The Last Signal \u2014 Storyboard",
+  "aspectRatio": "16:9",
+  "params": {
+    "maxSegmentSeconds": 15,
+    "minCutSeconds": 2,
+    "maxCutSeconds": 5,
+    "tolerance": 0.15
+  },
+  "episodes": [
+    {
+      "id": "E01",
+      "segments": [
+        {
+          "id": "E01-01",
+          "sceneId": "SC01",
+          "openingBlocking": "C01 stands at (0.72, 0.46) beside cabinet, facing north; C02 stands at (0.40, 0.40) beside desk, facing east. No extras.",
+          "soundscape": "Rain on glass; a distant approaching train.",
+          "cuts": [
+            {
+              "id": "K01",
+              "beatIds": [
+                "BT01"
+              ],
+              "seconds": 2,
+              "size": "close",
+              "camera": "static",
+              "framePrompt": "Close-up of a brass key raised beside a green signal cabinet.",
+              "action": "The key catches the overhead light.",
+              "characterIds": [
+                "C01"
+              ],
+              "references": []
+            },
+            {
+              "id": "K02",
+              "beatIds": [
+                "BT02"
+              ],
+              "seconds": 4,
+              "size": "medium",
+              "camera": "push-in",
+              "framePrompt": "Medium shot of an alert railway messenger beside an oak desk.",
+              "action": "The messenger turns toward the signal keeper.",
+              "characterIds": [
+                "C02"
+              ],
+              "references": []
+            },
+            {
+              "id": "K03",
+              "beatIds": [
+                "BT03"
+              ],
+              "seconds": 2,
+              "size": "close",
+              "camera": "static",
+              "framePrompt": "Close-up inside a green signal cabinet, a disconnected wire visible.",
+              "action": "The open door reveals the severed connection.",
+              "characterIds": [
+                "C01"
+              ],
+              "references": []
+            },
+            {
+              "id": "K04",
+              "beatIds": [
+                "BT04"
+              ],
+              "seconds": 4,
+              "size": "close",
+              "camera": "static",
+              "framePrompt": "Close-up of the signal keeper looking urgently toward the railway.",
+              "action": "The signal keeper understands the danger.",
+              "characterIds": [
+                "C01"
+              ],
+              "references": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
