@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "cast",
+  "id": "last-signal-cast",
+  "title": "The Last Signal \u2014 Cast",
+  "characters": [
+    {
+      "id": "C01",
+      "name": "Mara",
+      "aliases": [],
+      "arc": "From obedience to intervention.",
+      "personality": "Observant, restrained, decisive under pressure.",
+      "appearance": "An adult signal keeper with cropped dark hair and a navy work jacket.",
+      "imagePrompt": "Full-length adult railway signal keeper, cropped dark hair, navy work jacket, consistent brass jacket buttons, neutral background.",
+      "voicePrompt": "Adult alto voice, clipped diction, restrained urgency.",
+      "evidence": [
+        "Mara held the brass key beside the locked signal cabinet."
+      ],
+      "inferences": [
+        "Hair, jacket, and voice are production design choices."
+      ]
+    },
+    {
+      "id": "C02",
+      "name": "Ivo",
+      "aliases": [],
+      "arc": "From observer to ally.",
+      "personality": "Direct, alert, loyal.",
+      "appearance": "An adult railway messenger with curly brown hair and a gray wool coat.",
+      "imagePrompt": "Full-length adult railway messenger, curly brown hair, gray wool coat, neutral background.",
+      "voicePrompt": "Adult baritone voice, clear consonants, quick breath under pressure.",
+      "evidence": [
+        "Ivo watched the dark railway from the signal room."
+      ],
+      "inferences": [
+        "Hair, coat, and voice are production design choices."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "executable": "/path/to/your-generator",
+  "args": [
+    "--request",
+    "{request}",
+    "--result",
+    "{result}"
+  ],
+  "timeoutMs": 120000
+}

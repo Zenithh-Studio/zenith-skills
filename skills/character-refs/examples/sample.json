@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "kind": "character-refs",
+  "id": "C01-refs",
+  "title": "Mara \u2014 Character References",
+  "characterId": "C01",
+  "design": {
+    "appearance": "An adult signal keeper with cropped dark hair and a navy work jacket.",
+    "imagePrompt": "Full-length adult railway signal keeper, cropped dark hair, navy work jacket, consistent brass jacket buttons, neutral background.",
+    "style": "Neutral studio reference, plain light background."
+  },
+  "views": {},
+  "anchorApproval": null
+}
